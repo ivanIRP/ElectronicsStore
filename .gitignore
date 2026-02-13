@@ -1,0 +1,38 @@
+# .NET
+bin/
+obj/
+*.db
+*.db-shm
+*.db-wal
+.vs/
+*.user
+*.suo
+*.cache
+*.log
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+[Bb]uilds/
+*.userprefs
+*.sln.docstates
+
+# Android
+*.iml
+.gradle
+.idea/
+local.properties
+/build
+/captures
+.externalNativeBuild
+.cxx
+*.apk
+*.ap_
+*.dex
+*.class
+*.jar
+
+# OS
+.DS_Store
+Thumbs.db

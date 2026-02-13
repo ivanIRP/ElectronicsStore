@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Electronics Store</string>
+    <string name="cargar_productos">Cargando productos…</string>
+    <string name="error_conexion">Error de conexión con el servidor</string>
+    <string name="compra_exitosa">¡Compra realizada exitosamente!</string>
+    <string name="stock_insuficiente">Stock insuficiente</string>
+    <string name="comprar">Comprar</string>
+    <string name="cancelar">Cancelar</string>
+</resources>

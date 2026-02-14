@@ -16,14 +16,12 @@ namespace ElectronicsStoreAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Productos
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Producto>>> GetProductos()
         {
             return await _context.Productos.OrderByDescending(p => p.FechaRegistro).ToListAsync();
         }
 
-        // GET: api/Productos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Producto>> GetProducto(int id)
         {
@@ -37,7 +35,6 @@ namespace ElectronicsStoreAPI.Controllers
             return producto;
         }
 
-        // GET: api/Productos/disponibles
         [HttpGet("disponibles")]
         public async Task<ActionResult<IEnumerable<Producto>>> GetProductosDisponibles()
         {
@@ -47,7 +44,6 @@ namespace ElectronicsStoreAPI.Controllers
                 .ToListAsync();
         }
 
-        // POST: api/Productos
         [HttpPost]
         public async Task<ActionResult<Producto>> PostProducto(Producto producto)
         {
@@ -63,7 +59,6 @@ namespace ElectronicsStoreAPI.Controllers
             return CreatedAtAction(nameof(GetProducto), new { id = producto.Id }, producto);
         }
 
-        // PUT: api/Productos/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProducto(int id, Producto producto)
         {
@@ -98,7 +93,6 @@ namespace ElectronicsStoreAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Productos/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProducto(int id)
         {

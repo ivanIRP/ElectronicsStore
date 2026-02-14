@@ -16,14 +16,12 @@ namespace ElectronicsStoreAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Compras
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Compra>>> GetCompras()
         {
             return await _context.Compras.OrderByDescending(c => c.FechaCompra).ToListAsync();
         }
 
-        // GET: api/Compras/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Compra>> GetCompra(int id)
         {
@@ -37,7 +35,6 @@ namespace ElectronicsStoreAPI.Controllers
             return compra;
         }
 
-        // POST: api/Compras
         [HttpPost]
         public async Task<ActionResult<Compra>> PostCompra(Compra compra)
         {
@@ -46,24 +43,20 @@ namespace ElectronicsStoreAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Verificar que el producto existe
             var producto = await _context.Productos.FindAsync(compra.ProductoId);
             if (producto == null)
             {
                 return NotFound(new { message = "Producto no encontrado" });
             }
 
-            // Verificar stock disponible
             if (producto.Cantidad < compra.Cantidad)
             {
                 return BadRequest(new { message = $"Stock insuficiente. Disponible: {producto.Cantidad}" });
             }
 
-            // Calcular precio total
             compra.PrecioTotal = producto.Precio * compra.Cantidad;
             compra.FechaCompra = DateTime.Now;
 
-            // Decrementar stock
             producto.Cantidad -= compra.Cantidad;
 
             _context.Compras.Add(compra);
@@ -72,7 +65,6 @@ namespace ElectronicsStoreAPI.Controllers
             return CreatedAtAction(nameof(GetCompra), new { id = compra.Id }, compra);
         }
 
-        // GET: api/Compras/reporte
         [HttpGet("reporte")]
         public async Task<ActionResult<object>> GetReporteVentas()
         {

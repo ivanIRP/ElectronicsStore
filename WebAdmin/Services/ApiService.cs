@@ -15,7 +15,6 @@ namespace ElectronicsStoreWeb.Services
             _baseUrl = configuration["ApiSettings:BaseUrl"] ?? "http://localhost:5000/api";
         }
 
-        // Productos
         public async Task<List<Producto>> GetProductosAsync()
         {
             try
@@ -89,7 +88,6 @@ namespace ElectronicsStoreWeb.Services
             }
         }
 
-        // Compras
         public async Task<dynamic?> GetReporteVentasAsync()
         {
             try

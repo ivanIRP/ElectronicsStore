@@ -15,58 +15,94 @@ namespace ElectronicsStoreWeb.Services
             _baseUrl = configuration["ApiSettings:BaseUrl"] ?? "http://localhost:5000/api";
         }
 
+        // Productos
         public async Task<List<Producto>> GetProductosAsync()
         {
-            try {
+            try
+            {
                 var response = await _httpClient.GetAsync($"{_baseUrl}/Productos");
-                if (!response.IsSuccessStatusCode) return new List<Producto>();
+                response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<List<Producto>>(content) ?? new List<Producto>();
-            } catch { return new List<Producto>(); }
+            }
+            catch
+            {
+                return new List<Producto>();
+            }
         }
 
         public async Task<Producto?> GetProductoAsync(int id)
         {
-            try {
+            try
+            {
                 var response = await _httpClient.GetAsync($"{_baseUrl}/Productos/{id}");
-                if (!response.IsSuccessStatusCode) return null;
-                return JsonConvert.DeserializeObject<Producto>(await response.Content.ReadAsStringAsync());
-            } catch { return null; }
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Producto>(content);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
+        public async Task<bool> CreateProductoAsync(Producto producto)
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(producto);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync($"{_baseUrl}/Productos", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateProductoAsync(Producto producto)
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(producto);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PutAsync($"{_baseUrl}/Productos/{producto.Id}", content);
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteProductoAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"{_baseUrl}/Productos/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // Compras
         public async Task<dynamic?> GetReporteVentasAsync()
         {
-            try {
+            try
+            {
                 var response = await _httpClient.GetAsync($"{_baseUrl}/Compras/reporte");
-                if (!response.IsSuccessStatusCode) return null;
-                return JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
-            } catch { return null; }
-        }
-
-        public async Task<(bool success, string error, string data)> CreateProductoAsync(Producto p)
-        {
-            try {
-                var content = new StringContent(JsonConvert.SerializeObject(p), Encoding.UTF8, "application/json");
-                var res = await _httpClient.PostAsync($"{_baseUrl}/Productos", content);
-                return (res.IsSuccessStatusCode, res.ReasonPhrase ?? "Error", await res.Content.ReadAsStringAsync());
-            } catch (Exception ex) { return (false, ex.Message, ""); }
-        }
-
-        public async Task<(bool success, string error)> UpdateProductoAsync(Producto p)
-        {
-            try {
-                var content = new StringContent(JsonConvert.SerializeObject(p), Encoding.UTF8, "application/json");
-                var res = await _httpClient.PutAsync($"{_baseUrl}/Productos/{p.Id}", content);
-                return (res.IsSuccessStatusCode, res.ReasonPhrase ?? "Error");
-            } catch (Exception ex) { return (false, ex.Message); }
-        }
-
-        public async Task<(bool success, string error)> DeleteProductoAsync(int id)
-        {
-            try {
-                var res = await _httpClient.DeleteAsync($"{_baseUrl}/Productos/{id}");
-                return (res.IsSuccessStatusCode, res.ReasonPhrase ?? "Error");
-            } catch (Exception ex) { return (false, ex.Message); }
+                response.EnsureSuccessStatusCode();
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<dynamic>(content);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

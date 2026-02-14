@@ -24,27 +24,34 @@ namespace ElectronicsStoreAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Producto>> PostProducto(Producto producto)
+        public async Task<ActionResult<Producto>> PostProducto([FromBody] Producto producto)
         {
-            // ELIMINAR VALIDACIÓN: Evita que la API rechace el producto por no traer ID o Fecha
+            // Limpieza de validación para campos que el servidor genera automáticamente
             ModelState.Remove(nameof(producto.Id));
             ModelState.Remove(nameof(producto.FechaRegistro));
 
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+            {
+                var listaErrores = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { message = "Validación fallida", errors = listaErrores });
+            }
 
             try 
             {
-                producto.Id = 0; // Garantiza autoincremento en SQLite
-                producto.FechaRegistro = DateTime.Now; // El servidor pone la fecha real
+                producto.Id = 0; 
+                producto.FechaRegistro = DateTime.Now;
 
                 _context.Productos.Add(producto);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction("GetProducto", new { id = producto.Id }, producto);
+                return CreatedAtAction(nameof(GetProducto), new { id = producto.Id }, producto);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Error en BD", detail = ex.Message });
+                return StatusCode(500, new { message = "Error en base de datos", detail = ex.Message });
             }
         }
         
@@ -52,7 +59,7 @@ namespace ElectronicsStoreAPI.Controllers
         public async Task<ActionResult<Producto>> GetProducto(int id)
         {
             var producto = await _context.Productos.FindAsync(id);
-            if (producto == null) return NotFound();
+            if (producto == null) return NotFound(new { message = "Producto no encontrado" });
             return producto;
         }
     }

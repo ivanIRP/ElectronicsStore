@@ -20,14 +20,11 @@ namespace ElectronicsStoreWeb.Services
             try
             {
                 var response = await _httpClient.GetAsync($"{_baseUrl}/Productos");
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode) return new List<Producto>();
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<List<Producto>>(content) ?? new List<Producto>();
             }
-            catch
-            {
-                return new List<Producto>();
-            }
+            catch { return new List<Producto>(); }
         }
 
         public async Task<Producto?> GetProductoAsync(int id)
@@ -35,72 +32,50 @@ namespace ElectronicsStoreWeb.Services
             try
             {
                 var response = await _httpClient.GetAsync($"{_baseUrl}/Productos/{id}");
-                response.EnsureSuccessStatusCode();
+                if (!response.IsSuccessStatusCode) return null;
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<Producto>(content);
             }
-            catch
-            {
-                return null;
-            }
+            catch { return null; }
         }
 
-        public async Task<bool> CreateProductoAsync(Producto producto)
+        // CORRECCIÓN: Ahora devuelve una Tupla (bool, string, string)
+        public async Task<(bool success, string errorMessage, string responseData)> CreateProductoAsync(Producto producto)
         {
             try
             {
                 var json = JsonConvert.SerializeObject(producto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync($"{_baseUrl}/Productos", content);
-                return response.IsSuccessStatusCode;
+                var responseData = await response.Content.ReadAsStringAsync();
+                
+                return (response.IsSuccessStatusCode, response.ReasonPhrase ?? "Error", responseData);
             }
-            catch
-            {
-                return false;
-            }
+            catch (Exception ex) { return (false, ex.Message, ""); }
         }
 
-        public async Task<bool> UpdateProductoAsync(Producto producto)
+        // CORRECCIÓN: Ahora devuelve una Tupla (bool, string)
+        public async Task<(bool success, string errorMessage)> UpdateProductoAsync(Producto producto)
         {
             try
             {
                 var json = JsonConvert.SerializeObject(producto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PutAsync($"{_baseUrl}/Productos/{producto.Id}", content);
-                return response.IsSuccessStatusCode;
+                return (response.IsSuccessStatusCode, response.ReasonPhrase ?? "Error");
             }
-            catch
-            {
-                return false;
-            }
+            catch (Exception ex) { return (false, ex.Message); }
         }
 
-        public async Task<bool> DeleteProductoAsync(int id)
+        // CORRECCIÓN: Ahora devuelve una Tupla (bool, string)
+        public async Task<(bool success, string errorMessage)> DeleteProductoAsync(int id)
         {
             try
             {
                 var response = await _httpClient.DeleteAsync($"{_baseUrl}/Productos/{id}");
-                return response.IsSuccessStatusCode;
+                return (response.IsSuccessStatusCode, response.ReasonPhrase ?? "Error");
             }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public async Task<dynamic?> GetReporteVentasAsync()
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync($"{_baseUrl}/Compras/reporte");
-                response.EnsureSuccessStatusCode();
-                var content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<dynamic>(content);
-            }
-            catch
-            {
-                return null;
-            }
+            catch (Exception ex) { return (false, ex.Message); }
         }
     }
 }

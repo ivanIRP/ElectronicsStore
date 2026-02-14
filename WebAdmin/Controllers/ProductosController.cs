@@ -19,44 +19,25 @@ namespace ElectronicsStoreWeb.Controllers
             return View(productos);
         }
 
-        public async Task<IActionResult> Details(int id)
-        {
-            var producto = await _apiService.GetProductoAsync(id);
-            if (producto == null)
-            {
-                return NotFound();
-            }
-            return View(producto);
-        }
-
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View(new Producto());
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Producto producto)
         {
+            // Evita que la validación falle por la fecha que pone el servidor
+            ModelState.Remove(nameof(producto.FechaRegistro));
+
             if (ModelState.IsValid)
             {
-                var result = await _apiService.CreateProductoAsync(producto);
-                if (result)
+                // Desestructuración corregida
+                var (success, errorMsg, _) = await _apiService.CreateProductoAsync(producto);
+                if (success)
                 {
-                    TempData["Success"] = "Producto creado exitosamente";
+                    TempData["Success"] = "¡Producto creado!";
                     return RedirectToAction(nameof(Index));
                 }
-                ModelState.AddModelError("", "Error al crear el producto");
-            }
-            return View(producto);
-        }
-
-        public async Task<IActionResult> Edit(int id)
-        {
-            var producto = await _apiService.GetProductoAsync(id);
-            if (producto == null)
-            {
-                return NotFound();
+                ModelState.AddModelError("", $"Error API: {errorMsg}");
             }
             return View(producto);
         }
@@ -65,30 +46,18 @@ namespace ElectronicsStoreWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Producto producto)
         {
-            if (id != producto.Id)
-            {
-                return BadRequest();
-            }
+            ModelState.Remove(nameof(producto.FechaRegistro));
+            if (id != producto.Id) return BadRequest();
 
             if (ModelState.IsValid)
             {
-                var result = await _apiService.UpdateProductoAsync(producto);
-                if (result)
+                var (success, errorMsg) = await _apiService.UpdateProductoAsync(producto);
+                if (success)
                 {
-                    TempData["Success"] = "Producto actualizado exitosamente";
+                    TempData["Success"] = "¡Actualizado!";
                     return RedirectToAction(nameof(Index));
                 }
-                ModelState.AddModelError("", "Error al actualizar el producto");
-            }
-            return View(producto);
-        }
-
-        public async Task<IActionResult> Delete(int id)
-        {
-            var producto = await _apiService.GetProductoAsync(id);
-            if (producto == null)
-            {
-                return NotFound();
+                ModelState.AddModelError("", errorMsg);
             }
             return View(producto);
         }
@@ -97,15 +66,9 @@ namespace ElectronicsStoreWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var result = await _apiService.DeleteProductoAsync(id);
-            if (result)
-            {
-                TempData["Success"] = "Producto eliminado exitosamente";
-            }
-            else
-            {
-                TempData["Error"] = "Error al eliminar el producto";
-            }
+            var (success, errorMsg) = await _apiService.DeleteProductoAsync(id);
+            if (success) TempData["Success"] = "Eliminado correctamente";
+            else TempData["Error"] = errorMsg;
             return RedirectToAction(nameof(Index));
         }
     }

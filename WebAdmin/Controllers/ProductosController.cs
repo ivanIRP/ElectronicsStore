@@ -13,14 +13,12 @@ namespace ElectronicsStoreWeb.Controllers
             _apiService = apiService;
         }
 
-        // GET: Productos
         public async Task<IActionResult> Index()
         {
             var productos = await _apiService.GetProductosAsync();
             return View(productos);
         }
 
-        // GET: Productos/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var producto = await _apiService.GetProductoAsync(id);
@@ -31,13 +29,11 @@ namespace ElectronicsStoreWeb.Controllers
             return View(producto);
         }
 
-        // GET: Productos/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Productos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Producto producto)
@@ -55,7 +51,6 @@ namespace ElectronicsStoreWeb.Controllers
             return View(producto);
         }
 
-        // GET: Productos/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             var producto = await _apiService.GetProductoAsync(id);
@@ -66,7 +61,6 @@ namespace ElectronicsStoreWeb.Controllers
             return View(producto);
         }
 
-        // POST: Productos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Producto producto)
@@ -89,7 +83,6 @@ namespace ElectronicsStoreWeb.Controllers
             return View(producto);
         }
 
-        // GET: Productos/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var producto = await _apiService.GetProductoAsync(id);
@@ -100,7 +93,6 @@ namespace ElectronicsStoreWeb.Controllers
             return View(producto);
         }
 
-        // POST: Productos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

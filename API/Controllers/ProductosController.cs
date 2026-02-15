@@ -26,7 +26,6 @@ namespace ElectronicsStoreAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Producto>> PostProducto([FromBody] Producto producto)
         {
-            // Limpieza de validación para campos que el servidor genera automáticamente
             ModelState.Remove(nameof(producto.Id));
             ModelState.Remove(nameof(producto.FechaRegistro));
 
